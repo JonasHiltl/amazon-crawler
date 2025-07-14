@@ -1,0 +1,9 @@
+.git
+*.md
+*.yaml
+*.log
+*.html
+Dockerfile
+proxies.txt
+.dockerignore
+.env*

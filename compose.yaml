@@ -1,0 +1,54 @@
+services:
+  amzn-crawl-1:
+    build: .
+    environment:
+      POSTGRES_URL: postgresql://user:password@postgres:5432/scraper
+      POLL_INTERVAL: 5s
+      SEED_URLS: https://www.amazon.com,https://www.amazon.com/s?i=specialty-aps&bbn=16225007011,https://www.amazon.com/s?i=specialty-aps&bbn=16225009011,https://www.amazon.com/s?i=luxury-beauty,https://www.amazon.com/sports-outdoors/b/?node=3375251,https://www.amazon.com/b?node=2619533011,https://www.amazon.com/gp/browse.html?node=120955898011
+      #SEED_URLS: https://abrahamjuliot.github.io/creepjs,https://www.browserscan.net,https://bot.sannysoft.com,https://schneegans.de/web/http-echo
+    depends_on:
+      postgres:
+        condition: service_healthy
+      opensearch:
+        condition: service_started
+
+  postgres:
+    image: postgres:17.5-alpine
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: scraper
+    ports:
+      - '5432:5432'
+    volumes: 
+      - db:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      interval: 2s
+      timeout: 5s
+      retries: 5
+
+  opensearch:
+    image: opensearchproject/opensearch:latest
+    environment:
+      OPENSEARCH_INITIAL_ADMIN_PASSWORD: cJ2c?7SZA
+      discovery.type: single-node
+      plugins.security.disabled: true
+      network.host: "0.0.0.0"
+    ports:
+      - 9200:9200
+      - 9600:9600
+
+  dashboard:
+    image: opensearchproject/opensearch-dashboards:2.19.1
+    environment:
+      OPENSEARCH_HOSTS: '["http://opensearch:9200"]'
+      DISABLE_INSTALL_DEMO_CONFIG: "true"
+    volumes:
+      - "./opensearch-dashboards.yml:/usr/share/opensearch-dashboards/config/opensearch_dashboards.yml"
+    ports:
+      - 5601:5601
+
+volumes:
+  db:
+    driver: local

@@ -1,0 +1,23 @@
+### macOS ###
+.DS_Store
+
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.csv
+*.jsonl
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+*.html
+
+# Go workspace file
+go.work
+
+.env
+compose.prod.yaml

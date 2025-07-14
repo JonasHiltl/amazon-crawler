@@ -1,0 +1,7 @@
+server.name: os_dashboards
+server.host: "0.0.0.0"
+
+opensearch.username: "admin"
+opensearch.password: "cJ2c?7SZA"
+
+opensearch_security.enabled: false
